@@ -143,26 +143,26 @@ class p5KinectV2 : protected ofThread {
 	float nearClipping, farClipping;
 
   	bool bUseTexture;
-	ofTexture depthTex; ///< the depth texture
-	ofTexture rawDepthTex; ///<
-	ofTexture videoTex; ///< the RGB texture
-	ofTexture bodyIndexTex;
+	//ofTexture depthTex; ///< the depth texture
+	//ofTexture rawDepthTex; ///<
+	//ofTexture videoTex; ///< the RGB texture
+	//ofTexture bodyIndexTex;
 	//ofTexture irTex;
 
-	ofPixels videoPixels;
-	ofPixels videoPixelsBack;			///< rgb back
-	ofPixels depthPixels;
-	ofPixels depthPixelsBack;
-	ofShortPixels depthPixelsRaw;
-	ofShortPixels depthPixelsRawBack;	///< depth back
+	//ofPixels videoPixels;
+	//ofPixels videoPixelsBack;			///< rgb back
+	//ofPixels depthPixels;
+	//ofPixels depthPixelsBack;
+	//ofShortPixels depthPixelsRaw;
+	//ofShortPixels depthPixelsRawBack;	///< depth back
 
-	ofShortPixels irPixelsRaw;
-	ofShortPixels irPixelsBackRaw;
-	ofPixels irPixels;
-	ofPixels irPixelsBack;
+	//ofShortPixels irPixelsRaw;
+	//ofShortPixels irPixelsBackRaw;
+	//ofPixels irPixels;
+	//ofPixels irPixelsBack;
 
-	ofPixels bodyIndexPixelsBack;
-	ofPixels bodyIndexPixels;
+	//ofPixels bodyIndexPixelsBack;
+	//ofPixels bodyIndexPixels;
 
 	bool bIsFrameNewVideo;
 	bool bNeedsUpdateVideo;
