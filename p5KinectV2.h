@@ -36,8 +36,8 @@ class Kv2Joint
 	}
 
   protected:
-	ofVec3f jointPosition;
-	ofQuaternion jointOrientation;
+	float* jointPosition; // always 3
+	float* jointOrientation; // always 4!
 	JointType type;
 	TrackingState trackingState;
 };
@@ -54,73 +54,54 @@ class p5KinectV2 : protected ofThread {
 	
 	p5KinectV2();
 
-	// new API
-	bool initSensor( int id = 0 );
-	bool initDepthStream( bool mapDepthToColor = false );
-	bool initColorStream(bool mapColorToDepth = false, ColorImageFormat format = ColorImageFormat_Rgba);
-	bool initIRStream( int width, int height );
-	bool initSkeletonStream( bool seated );
-	bool start();
+	boolean initSensor( int id );
+	boolean initDepthStream( boolean mapDepthToColor);
+	boolean initColorStream(boolean mapColorToDepth, ColorImageFormat format);
+	boolean initIRStream( int width, int height );
+	boolean initSkeletonStream( boolean seated );
+	boolean start();
 
 	void stop();
 
   	/// is the current frame new?
-	bool isFrameNew();
-	bool isFrameNewVideo();
-	bool isFrameNewDepth();
-	bool isNewSkeleton();
-	bool initBodyIndexStream();
+	boolean isFrameNew();
+	boolean isFrameNewVideo();
+	boolean isFrameNewDepth();
+	boolean isNewSkeleton();
+	boolean initBodyIndexStream();
 
-	void setDepthClipping(float nearClip=500, float farClip=4000);
+	void setDepthClipping(float nearClip, float farClip);
 	
 	/// updates the pixel buffers and textures
-	///
 	/// make sure to call this to update to the latest incoming frames
 	void update();
-	ofPixels& getColorPixelsRef();
-	ofPixels & getDepthPixelsRef();       	///< grayscale values
-	ofShortPixels & getRawDepthPixelsRef();	///< raw 11 bit values
+	unsigned char* getColorPixels() { return colorPixels; }
+	unsigned char* getDepthPixels() { return depthPixels; }       ///< grayscale values
+	int* getRawDepthPixels() { return depthPixelsRaw; }	///< raw 11 bit values
 
 	/// enable/disable frame loading into textures on update()
-	void setUseTexture(bool bUse);
+	void setUseTexture(boolean bUse);
 
-	/// draw the video texture
-	void draw(float x, float y, float w, float h);
-	void draw(float x, float y);
-	void draw(const ofPoint& point);
-	void draw(const ofRectangle& rect);
+	// /// draw the video texture
+	// void draw(float x, float y, float w, float h);
+	// void draw(float x, float y);
+	// void draw(int* point);
 
-	/// draw the grayscale depth texture
-	void drawRawDepth(float x, float y, float w, float h);
-	void drawRawDepth(float x, float y);
-	void drawRawDepth(const ofPoint& point);
-	void drawRawDepth(const ofRectangle& rect);
+	// /// draw the grayscale depth texture
+	// void drawRawDepth(float x, float y, float w, float h);
+	// void drawRawDepth(float x, float y);
+	// void drawRawDepth(int* point);
 
-	/// draw the grayscale depth texture
-	void drawDepth(float x, float y, float w, float h);
-	void drawDepth(float x, float y);
-	void drawDepth(const ofPoint& point);
-	void drawDepth(const ofRectangle& rect);
+	// /// draw the grayscale depth texture
+	// void drawDepth(float x, float y, float w, float h);
+	// void drawDepth(float x, float y);
+	// void drawDepth(int* point);
 
-	void drawIR( float x, float y, float w, float h );
+	// void drawIR( float x, float y, float w, float h );
 
-	void drawBodyIndex(float x, float y);
-
-	//vector<Skeleton> &getSkeletons();
-	void drawSkeleton(int index, ofVec2f scale);
-	void drawAllSkeletons(ofVec2f scale);
-
-	ofTexture &getRawDepthTexture() {
-		return rawDepthTex;
-	}
-
-	ofTexture &getDepthTexture() {
-		return depthTex;
-	}
-
-	ofTexture &getColorTexture() {
-		return videoTex;
-	}
+	// void drawBodyIndex(float x, float y);
+	// void drawSkeleton(int index, int* scale);
+	// void drawAllSkeletons(int* scale);
 
   protected:
 
@@ -143,27 +124,7 @@ class p5KinectV2 : protected ofThread {
 	float nearClipping, farClipping;
 
   	bool bUseTexture;
-	//ofTexture depthTex; ///< the depth texture
-	//ofTexture rawDepthTex; ///<
-	//ofTexture videoTex; ///< the RGB texture
-	//ofTexture bodyIndexTex;
-	//ofTexture irTex;
-
-	//ofPixels videoPixels;
-	//ofPixels videoPixelsBack;			///< rgb back
-	//ofPixels depthPixels;
-	//ofPixels depthPixelsBack;
-	//ofShortPixels depthPixelsRaw;
-	//ofShortPixels depthPixelsRawBack;	///< depth back
-
-	//ofShortPixels irPixelsRaw;
-	//ofShortPixels irPixelsBackRaw;
-	//ofPixels irPixels;
-	//ofPixels irPixelsBack;
-
-	//ofPixels bodyIndexPixelsBack;
-	//ofPixels bodyIndexPixels;
-
+	
 	bool bIsFrameNewVideo;
 	bool bNeedsUpdateVideo;
 	bool bIsFrameNewDepth;
@@ -201,6 +162,12 @@ class p5KinectV2 : protected ofThread {
 	KCBFrameDescription depthFrameDescription;
 	KCBFrameDescription irFrameDescription;
 	KCBFrameDescription bodyIndexFrameDescription;
+
+	unsigned char* bodyIndexPixelsBack, bodyIndexPixels;
+	unsigned char* irPixelsRaw, irPixelsRawBack;
+	int* depthPixelsRaw, depthPixelsRawBack;
+	unsigned char* depthPixels, depthPixelsBack;
+	unsigned char* videoPixels, videoPixelsBack;
 
 	pair<JointType, JointType> skeletonDrawOrder[JointType_Count];
 };

@@ -10,15 +10,21 @@
 // 	TrackingState getTrackingState();
 // }
 
-TrackingState_NotTracked
-TrackingState_Inferred
-TrackingState_Tracked
+public enum TrackingState 
+{
+	TrackingState_NotTracked,
+	TrackingState_Inferred,
+	TrackingState_Tracked
+};
 
-ColorImageFormat_Yuv
-ColorImageFormat_None
-ColorImageFormat_Bgra
-ColorImageFormat_Bayer
-ColorImageFormat_Yuy2
+public enum ColorImageFormat {
+
+	ColorImageFormat_Yuv,
+	ColorImageFormat_None,
+	ColorImageFormat_Bgra,
+	ColorImageFormat_Bayer,
+	ColorImageFormat_Yuy2
+};
 
 class p5KinectCommonBridge 
 {
@@ -55,24 +61,24 @@ class p5KinectCommonBridge
 	/// enable/disable frame loading into textures on update()
 	static native void setUseTexture(boolean bUse);
 
-	/// draw the video texture
-	static native void draw(float x, float y, float w, float h);
-	static native void draw(float x, float y);
-	static native void draw(int[] point);
+	// /// draw the video texture
+	// static native void draw(float x, float y, float w, float h);
+	// static native void draw(float x, float y);
+	// static native void draw(int[] point);
 
-	/// draw the grayscale depth texture
-	static native void drawRawDepth(float x, float y, float w, float h);
-	static native void drawRawDepth(float x, float y);
-	static native void drawRawDepth(int[] point);
+	// /// draw the grayscale depth texture
+	// static native void drawRawDepth(float x, float y, float w, float h);
+	// static native void drawRawDepth(float x, float y);
+	// static native void drawRawDepth(int[] point);
 
-	/// draw the grayscale depth texture
-	static native void drawDepth(float x, float y, float w, float h);
-	static native void drawDepth(float x, float y);
-	static native void drawDepth(int[] point);
+	// /// draw the grayscale depth texture
+	// static native void drawDepth(float x, float y, float w, float h);
+	// static native void drawDepth(float x, float y);
+	// static native void drawDepth(int[] point);
 
-	static native void drawIR( float x, float y, float w, float h );
+	// static native void drawIR( float x, float y, float w, float h );
 
-	static native void drawBodyIndex(float x, float y);
-	static native void drawSkeleton(int index, int[] scale);
-	static native void drawAllSkeletons(int[] scale);
+	// static native void drawBodyIndex(float x, float y);
+	// static native void drawSkeleton(int index, int[] scale);
+	// static native void drawAllSkeletons(int[] scale);
 }

@@ -123,28 +123,28 @@ void p5KinectV2::update()
 		//swap(videoPixelsBack, videoPixels);
 		swap(pColorFrame, pColorFrameBack);
 
-		if(bUseTexture) {
-			if(bVideoIsInfrared) 
-			{
-				if(bProgrammableRenderer){
-					videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_RED);
-				} else {
-					videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_LUMINANCE16);
-				}
-			} 
-			else 
-			{
-				if( bProgrammableRenderer ) {
-					// programmable renderer likes this
-					// TODO
-					// swizzle this to rgb & a -> GL_ONE
-					//videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_RGBA);
-					videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_RG16);
-				} else {
-					videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_RGBA);
-				}
-			}
-		}
+		// if(bUseTexture) {
+		// 	if(bVideoIsInfrared) 
+		// 	{
+		// 		if(bProgrammableRenderer){
+		// 			videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_RED);
+		// 		} else {
+		// 			videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_LUMINANCE16);
+		// 		}
+		// 	} 
+		// 	else 
+		// 	{
+		// 		if( bProgrammableRenderer ) {
+		// 			// programmable renderer likes this
+		// 			// TODO
+		// 			// swizzle this to rgb & a -> GL_ONE
+		// 			//videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_RGBA);
+		// 			videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_RG16);
+		// 		} else {
+		// 			videoTex.loadData(pColorFrame->Buffer, colorFrameDescription.width, colorFrameDescription.height, GL_RGBA);
+		// 		}
+		// 	}
+		// }
 	} else {
 		bIsFrameNewVideo = false;
 	}
@@ -163,20 +163,20 @@ void p5KinectV2::update()
 		bIsFrameNewDepth = true;
 		bNeedsUpdateDepth = false;
 
-		for(int i = 0; i < depthPixels.getWidth()*depthPixels.getHeight(); i++) {
+		for(int i = 0; i < DEPTH_SIZE; i++) {
 			depthPixels[i] = depthLookupTable[ofClamp(pDepthFrame->Buffer[i] >> 4, 0, depthLookupTable.size() - 1)];
 			pDepthFrame->Buffer[i] = pDepthFrame->Buffer[i] >> 4;
 		}
 
-		if(bUseTexture) {
-			if( bProgrammableRenderer ) {
-				depthTex.loadData(depthPixels.getPixels(), depthFrameDescription.width, depthFrameDescription.height, GL_RED);
-				rawDepthTex.loadData(depthPixelsRaw.getPixels(), depthFrameDescription.width, depthFrameDescription.height, GL_RED);
-			} else {
-				depthTex.loadData(depthPixels.getPixels(), depthFrameDescription.width, depthFrameDescription.height, GL_LUMINANCE);
-				rawDepthTex.loadData(pDepthFrame->Buffer, depthFrameDescription.width, depthFrameDescription.height, GL_LUMINANCE16);
-			}
-		}
+		// if(bUseTexture) {
+		// 	if( bProgrammableRenderer ) {
+		// 		depthTex.loadData(depthPixels.getPixels(), depthFrameDescription.width, depthFrameDescription.height, GL_RED);
+		// 		rawDepthTex.loadData(depthPixelsRaw.getPixels(), depthFrameDescription.width, depthFrameDescription.height, GL_RED);
+		// 	} else {
+		// 		depthTex.loadData(depthPixels.getPixels(), depthFrameDescription.width, depthFrameDescription.height, GL_LUMINANCE);
+		// 		rawDepthTex.loadData(pDepthFrame->Buffer, depthFrameDescription.width, depthFrameDescription.height, GL_LUMINANCE16);
+		// 	}
+		// }
 	} else {
 		bIsFrameNewDepth = false;
 	}
@@ -193,169 +193,154 @@ void p5KinectV2::update()
 		
 		swap(pBodyIndexFrame, pBodyIndexFrame);
 
-		if (bProgrammableRenderer) {
-			bodyIndexTex.loadData(pBodyIndexFrame->Buffer, bodyIndexFrameDescription.width, bodyIndexFrameDescription.height, GL_RED);
-		} else {
-			bodyIndexTex.loadData(pBodyIndexFrame->Buffer, bodyIndexFrameDescription.width, bodyIndexFrameDescription.height, GL_LUMINANCE);
-		}
+		// if (bProgrammableRenderer) {
+		// 	bodyIndexTex.loadData(pBodyIndexFrame->Buffer, bodyIndexFrameDescription.width, bodyIndexFrameDescription.height, GL_RED);
+		// } else {
+		// 	bodyIndexTex.loadData(pBodyIndexFrame->Buffer, bodyIndexFrameDescription.width, bodyIndexFrameDescription.height, GL_LUMINANCE);
+		// }
 
 		bNeedsUpdateBodyIndex = false;
 	}
 }
 
+// //------------------------------------
+// ofPixels& p5KinectV2::getColorPixelsRef(){
+// 	return videoPixels;
+// }
+
+// //------------------------------------
+// ofPixels & p5KinectV2::getDepthPixelsRef(){       	///< grayscale values
+// 	return depthPixels;
+// }
+// 
 //------------------------------------
-ofPixels& p5KinectV2::getColorPixelsRef(){
-	return videoPixels;
-}
+// ofShortPixels & p5KinectV2::getRawDepthPixelsRef(){
+// 	return depthPixelsRaw;
+// }
+// 
+// //------------------------------------
+// void p5KinectV2::setUseTexture(bool bUse){
+// 	bUseTexture = bUse;
+// }
 
-//------------------------------------
-ofPixels & p5KinectV2::getDepthPixelsRef(){       	///< grayscale values
-	return depthPixels;
-}
+// //----------------------------------------------------------
+// void p5KinectV2::draw(float _x, float _y, float _w, float _h) {
+// 	if(bUseTexture) {
+// 		videoTex.draw(_x, _y, _w, _h);
+// 	}
+// }
 
-//------------------------------------
-ofShortPixels & p5KinectV2::getRawDepthPixelsRef(){
-	return depthPixelsRaw;
-}
+// //----------------------------------------------------------
+// void p5KinectV2::draw(float _x, float _y) {
+// 	draw(_x, _y, colorFrameDescription.width, colorFrameDescription.height);
+// }
 
-//------------------------------------
-void p5KinectV2::setUseTexture(bool bUse){
-	bUseTexture = bUse;
-}
+// //----------------------------------------------------------
+// void p5KinectV2::draw(const ofPoint & point) {
+// 	draw(point.x, point.y);
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::draw(float _x, float _y, float _w, float _h) {
-	if(bUseTexture) {
-		videoTex.draw(_x, _y, _w, _h);
-	}
-}
+// //----------------------------------------------------------
+// void p5KinectV2::draw(const ofRectangle & rect) {
+// 	draw(rect.x, rect.y, rect.width, rect.height);
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::draw(float _x, float _y) {
-	draw(_x, _y, colorFrameDescription.width, colorFrameDescription.height);
-}
+// //----------------------------------------------------------
+// void p5KinectV2::drawRawDepth(float _x, float _y, float _w, float _h) {
+// 	if(bUseTexture) {
+// 		// rawDepthTex.draw(_x, _y, _w, _h);
+// 	}
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::draw(const ofPoint & point) {
-	draw(point.x, point.y);
-}
+// //----------------------------------------------------------
+// void p5KinectV2::drawRawDepth(float _x, float _y) {
+// 	drawRawDepth(_x, _y, depthFrameDescription.width, depthFrameDescription.height);
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::draw(const ofRectangle & rect) {
-	draw(rect.x, rect.y, rect.width, rect.height);
-}
+// //----------------------------------------------------------
+// void p5KinectV2::drawRawDepth(const ofPoint & point) {
+// 	drawRawDepth(point.x, point.y);
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::drawRawDepth(float _x, float _y, float _w, float _h) {
-	if(bUseTexture) {
-		rawDepthTex.draw(_x, _y, _w, _h);
-	}
-}
+// //----------------------------------------------------------
+// void p5KinectV2::drawRawDepth(const ofRectangle & rect) {
+// 	drawRawDepth(rect.x, rect.y, rect.width, rect.height);
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::drawRawDepth(float _x, float _y) {
-	drawRawDepth(_x, _y, depthFrameDescription.width, depthFrameDescription.height);
-}
+// //----------------------------------------------------------
+// void p5KinectV2::drawDepth(float _x, float _y, float _w, float _h) {
+// 	if(bUseTexture) {
+// 		depthTex.draw(_x, _y, _w, _h);
+// 	}
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::drawRawDepth(const ofPoint & point) {
-	drawRawDepth(point.x, point.y);
-}
+// //---------------------------------------------------------------------------
+// void p5KinectV2::drawDepth(float _x, float _y) {
+// 	drawDepth(_x, _y, (float) depthFrameDescription.width, (float) depthFrameDescription.height);
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::drawRawDepth(const ofRectangle & rect) {
-	drawRawDepth(rect.x, rect.y, rect.width, rect.height);
-}
+// //----------------------------------------------------------
+// void p5KinectV2::drawDepth(const ofPoint & point) {
+// 	drawDepth(point.x, point.y);
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::drawDepth(float _x, float _y, float _w, float _h) {
-	if(bUseTexture) {
-		depthTex.draw(_x, _y, _w, _h);
-	}
-}
+// //----------------------------------------------------------
+// void p5KinectV2::drawDepth(const ofRectangle & rect) {
+// 	drawDepth(rect.x, rect.y, rect.width, rect.height);
+// }
 
-//---------------------------------------------------------------------------
-void p5KinectV2::drawDepth(float _x, float _y) {
-	drawDepth(_x, _y, (float) depthFrameDescription.width, (float) depthFrameDescription.height);
-}
+// //----------------------------------------------------------
+// void p5KinectV2::drawBodyIndex(float x, float y) {
+// 	bodyIndexTex.draw(x, y);
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::drawDepth(const ofPoint & point) {
-	drawDepth(point.x, point.y);
-}
+// void p5KinectV2::drawAllSkeletons(ofVec2f scale)
+// {
+// 	for (int i = 0; i < skeletons.size(); i++)
+// 	{
+// 		if (skeletons[i].tracked)
+// 		{
+// 			drawSkeleton(i, scale);
+// 		}
+// 	}
+// }
 
-//----------------------------------------------------------
-void p5KinectV2::drawDepth(const ofRectangle & rect) {
-	drawDepth(rect.x, rect.y, rect.width, rect.height);
-}
+// //
+// void p5KinectV2::drawSkeleton( int index, ofVec2f scale )
+// {
+// 	if(index >= skeletons.size())
+// 	{
+// 		ofLog() << " skeleton index too high " << endl;
+// 		return;
+// 	}
 
-//----------------------------------------------------------
-void p5KinectV2::drawBodyIndex(float x, float y) {
-	bodyIndexTex.draw(x, y);
-}
+// 	if (!skeletons[index].tracked)
+// 	{
+// 		ofLog() << " skeleton index not being tracked " << endl;
+// 		return;
+// 	}
 
-void p5KinectV2::drawAllSkeletons(ofVec2f scale)
-{
-	for (int i = 0; i < skeletons.size(); i++)
-	{
-		if (skeletons[i].tracked)
-		{
-			drawSkeleton(i, scale);
-		}
-	}
-}
+// 	ofVec3f lastPosition(-1,-1,-1);
+// 	ofVec3f normalize(0.5, 0.5, 0);
+// 	ofVec3f scale3(scale.x, scale.y, 1);
 
-//
-void p5KinectV2::drawSkeleton( int index, ofVec2f scale )
-{
-	if(index >= skeletons.size())
-	{
-		ofLog() << " skeleton index too high " << endl;
-		return;
-	}
+// 	for (int i = 0; i < JointType_Count; i++)
+// 	{
+// 		ofSetLineWidth(2);
 
-	if (!skeletons[index].tracked)
-	{
-		ofLog() << " skeleton index not being tracked " << endl;
-		return;
-	}
+// 		ofVec3f lineBegin = (skeletons[index].joints[skeletonDrawOrder[i].first].getPosition() + normalize) * scale3;
+// 		lineBegin.y = scale3.y - lineBegin.y;
+// 		ofVec3f lineEnd = (skeletons[index].joints[skeletonDrawOrder[i].second].getPosition() + normalize) * scale3;
+// 		lineEnd.y = scale3.y - lineEnd.y;
 
-	ofVec3f lastPosition(-1,-1,-1);
-	ofVec3f normalize(0.5, 0.5, 0);
-	ofVec3f scale3(scale.x, scale.y, 1);
+// 		ofSetColor(0, 255, 0);
+// 		ofLine(lineBegin, lineEnd);
+// 		ofSetColor(255, 0, 0);
+// 		ofCircle(lineEnd, 10);
+// 	}
 
-	// Iterate through joints
-	//for (map<JointType, Kv2Joint>::iterator it = skeletons[index].joints.begin(); it != skeletons[index].joints.end(); ++it)
-	//{
-
-	//	//// Get position and rotation
-	//	Kv2Joint joint = it->second;
-
-	//	ofSetColor(255, 0, 0);
-	//	ofVec3f screenPosition = (joint.getPosition() + normalize) * scale3;
-	//	screenPosition.y = 480 - screenPosition.y;
-	//	ofCircle(screenPosition, 10);
-
-	//	lastPosition = joint.getPosition() * scale;
-	//}
-
-	for (int i = 0; i < JointType_Count; i++)
-	{
-		ofSetLineWidth(2);
-
-		ofVec3f lineBegin = (skeletons[index].joints[skeletonDrawOrder[i].first].getPosition() + normalize) * scale3;
-		lineBegin.y = scale3.y - lineBegin.y;
-		ofVec3f lineEnd = (skeletons[index].joints[skeletonDrawOrder[i].second].getPosition() + normalize) * scale3;
-		lineEnd.y = scale3.y - lineEnd.y;
-
-		ofSetColor(0, 255, 0);
-		ofLine(lineBegin, lineEnd);
-		ofSetColor(255, 0, 0);
-		ofCircle(lineEnd, 10);
-	}
-
-	ofSetColor(255, 255, 255);
-}
+// 	ofSetColor(255, 255, 255);
+// }
 
 
 bool p5KinectV2::initSensor( int id )
@@ -401,11 +386,13 @@ bool p5KinectV2::initDepthStream( bool mapDepthToColor )
 	depthPixelsRawBack.allocate(depthFrameDescription.width, depthFrameDescription.height, OF_IMAGE_GRAYSCALE);
 
 	pDepthFrame = new KCBDepthFrame();
-	pDepthFrame->Buffer = depthPixelsRaw.getPixels();
+	depthPixelsRaw = new int[depthFrameDescription.lengthInPixels];
+	pDepthFrame->Buffer = depthPixelsRaw;
 	pDepthFrame->Size = depthFrameDescription.lengthInPixels;
 
 	pDepthFrameBack = new KCBDepthFrame();
-	pDepthFrameBack->Buffer = depthPixelsRawBack.getPixels();
+	depthPixelsRawBack = new int[depthFrameDescription.lengthInPixels];
+	pDepthFrameBack->Buffer = depthPixelsRawBack;
 	pDepthFrameBack->Size = depthFrameDescription.lengthInPixels;
 
 	if(bUseTexture){
@@ -436,43 +423,43 @@ bool p5KinectV2::initColorStream( bool mapColorToDepth, ColorImageFormat format)
 
 	KCBGetColorFrameDescription(hKinect, ColorImageFormat_Rgba, &colorFrameDescription);
 
-	if(bUseTexture){
-		if (format != ColorImageFormat_Rgba)
-		{
-			if (bProgrammableRenderer)
-			{
-				videoTex.allocate(colorFrameDescription.width, colorFrameDescription.height, GL_RG16);
-			}
-			else
-			{
-				ofLogError("p5KinectV2::initColorStream", "yuy2 needs programmable renderer");
-			}
-		}
-		else
-		{ 
-			videoTex.allocate(colorFrameDescription.width, colorFrameDescription.height, GL_RGBA);
-		}
-	}
+	// if(bUseTexture){
+	// 	if (format != ColorImageFormat_Rgba)
+	// 	{
+	// 		if (bProgrammableRenderer)
+	// 		{
+	// 			videoTex.allocate(colorFrameDescription.width, colorFrameDescription.height, GL_RG16);
+	// 		}
+	// 		else
+	// 		{
+	// 			ofLogError("p5KinectV2::initColorStream", "yuy2 needs programmable renderer");
+	// 		}
+	// 	}
+	// 	else
+	// 	{ 
+	// 		videoTex.allocate(colorFrameDescription.width, colorFrameDescription.height, GL_RGBA);
+	// 	}
+	// }
 
 	if (format != ColorImageFormat_Rgba)
 	{
-		videoPixels.allocate(colorFrameDescription.width, colorFrameDescription.height, 2);
-		videoPixelsBack.allocate(colorFrameDescription.width, colorFrameDescription.height, 2);
+		videoPixels = new unsigned char[colorFrameDescription.width * colorFrameDescription.height * 2];
+		videoPixelsBack = new unsigned char[colorFrameDescription.width * colorFrameDescription.height * 2];
 	}
 	else
 	{
-		videoPixels.allocate(colorFrameDescription.width, colorFrameDescription.height, OF_IMAGE_COLOR_ALPHA);
-		videoPixelsBack.allocate(colorFrameDescription.width, colorFrameDescription.height, OF_IMAGE_COLOR_ALPHA);
+		videoPixels = new unsigned char[colorFrameDescription.width * colorFrameDescription.height * 4];
+		videoPixelsBack = new unsigned char[colorFrameDescription.width * colorFrameDescription.height * 4];
 	}
 
 	pColorFrame = new KCBColorFrame();
-	pColorFrame->Buffer = videoPixels.getPixels();
+	pColorFrame->Buffer = videoPixels;
 	pColorFrame->Size = colorFrameDescription.lengthInPixels * colorFrameDescription.bytesPerPixel;
 	pColorFrame->Format = format;
 
 
 	pColorFrameBack = new KCBColorFrame();
-	pColorFrameBack->Buffer = videoPixelsBack.getPixels();
+	pColorFrameBack->Buffer = videoPixelsBack;
 	pColorFrameBack->Size = colorFrameDescription.lengthInPixels * colorFrameDescription.bytesPerPixel;
 	pColorFrameBack->Format = format;
 
@@ -494,23 +481,25 @@ bool p5KinectV2::initIRStream( int width, int height )
 	irPixelsRaw.allocate(irFrameDescription.width, irFrameDescription.height, OF_IMAGE_GRAYSCALE);
 
 	pInfraredFrameBack = new KCBInfraredFrame();
-	pInfraredFrameBack->Buffer = irPixelsBackRaw.getPixels();
+	irPixelsRawBack = new unsigned char[irFrameDescription.lengthInPixels];
+	pInfraredFrameBack->Buffer = irPixelsRawBack;
 	pInfraredFrameBack->Size = irFrameDescription.lengthInPixels;
 
 	pInfraredFrame = new KCBInfraredFrame();
-	pInfraredFrame->Buffer = irPixelsRaw.getPixels();
+	irPixelsRaw = new unsigned char[irFrameDescription.lengthInPixels];
+	pInfraredFrame->Buffer = irPixelsRaw;
 	pInfraredFrame->Size = irFrameDescription.lengthInPixels;
 
-	if(bUseTexture)
-	{
-		if(bProgrammableRenderer){
-			videoTex.allocate(irFrameDescription.width, irFrameDescription.height, GL_R8);
-			videoTex.setRGToRGBASwizzles(true);
-		}
-		else{
-			videoTex.allocate(irFrameDescription.width, irFrameDescription.height, GL_LUMINANCE);
-		}
-	}
+	// if(bUseTexture)
+	// {
+	// 	if(bProgrammableRenderer){
+	// 		videoTex.allocate(irFrameDescription.width, irFrameDescription.height, GL_R8);
+	// 		videoTex.setRGToRGBASwizzles(true);
+	// 	}
+	// 	else{
+	// 		videoTex.allocate(irFrameDescription.width, irFrameDescription.height, GL_LUMINANCE);
+	// 	}
+	// }
 
 	bInited = true;
 	ofLogError("p5KinectV2::initIRStream") << "cannot initialize stream";
@@ -535,21 +524,23 @@ bool p5KinectV2::initBodyIndexStream()
 	bodyIndexPixelsBack.allocate(bodyIndexFrameDescription.width, bodyIndexFrameDescription.height, OF_IMAGE_GRAYSCALE);
 
 	pBodyIndexFrameBack = new KCBBodyIndexFrame();
-	pBodyIndexFrameBack->Buffer = bodyIndexPixelsBack.getPixels();
+	bodyIndexPixelsBack = new unsigned char[bodyIndexFrameDescription.lengthInPixels];
+	pBodyIndexFrameBack->Buffer = bodyIndexPixelsBack;
 	pBodyIndexFrameBack->Size = bodyIndexFrameDescription.lengthInPixels;
 
 	pBodyIndexFrame = new KCBBodyIndexFrame();
-	pBodyIndexFrame->Buffer = bodyIndexPixels.getPixels();
+	bodyIndexPixels = new unsigned char[bodyIndexFrameDescription.lengthInPixels];
+	pBodyIndexFrame->Buffer = bodyIndexPixels;
 	pBodyIndexFrame->Size = bodyIndexFrameDescription.lengthInPixels;
 
-	if (bProgrammableRenderer)
-	{
-		bodyIndexTex.allocate(bodyIndexFrameDescription.width, bodyIndexFrameDescription.height, GL_R8);
-	}
-	else
-	{
-		bodyIndexTex.allocate(bodyIndexFrameDescription.width, bodyIndexFrameDescription.height, GL_LUMINANCE);
-	}
+	// if (bProgrammableRenderer)
+	// {
+	// 	bodyIndexTex.allocate(bodyIndexFrameDescription.width, bodyIndexFrameDescription.height, GL_R8);
+	// }
+	// else
+	// {
+	// 	bodyIndexTex.allocate(bodyIndexFrameDescription.width, bodyIndexFrameDescription.height, GL_LUMINANCE);
+	// }
 	bUsingBodyIndex = true;
 
 	return true; //??
@@ -690,7 +681,7 @@ void p5KinectV2::threadedFunction(){
 				// do we need to do this anymore?
 				for (int i = 0; i <colorFrameDescription.width * colorFrameDescription.height; i++)
 				{
-					videoPixels.getPixels()[i] = reinterpret_cast<USHORT*>(irPixelByteArray)[i] >> 8;
+					videoPixels[i] = reinterpret_cast<USHORT*>(irPixelByteArray)[i] >> 8;
 				}
 			}
 		}
