@@ -20,7 +20,7 @@ public enum ColorImageFormat {
 	ColorImageFormat_Yuy2
 };
 
-public class SkeletonData implements KinectConstants {
+public class SkeletonData {
 
 	public TrackingState trackingState;
 	public PVector[] skeletonPositions;
@@ -62,7 +62,7 @@ public class SkeletonData implements KinectConstants {
 }
 
 
-class p5KinectV2 
+class p5KinectV2 implements Runnable 
 {
 
 	PApplet parent;
@@ -96,6 +96,28 @@ class p5KinectV2
 		}
 	}
 
+	public PImage GetImage() {
+		PImage img = parent.createImage(WIDTH, HEIGHT, ARGB);
+		PApplet.arrayCopy(getColorPixels(), img.pixels);
+		img.updatePixels();
+		return img;
+	}
+
+	public PImage GetDepth() {
+		PImage img = parent.createImage(WIDTH, HEIGHT, ARGB);
+		PApplet.arrayCopy(getDepthPixels(), img.pixels);
+		img.updatePixels();
+		return img;
+	}
+
+	public PImage GetMask() {
+		PImage img = parent.createImage(WIDTH, HEIGHT, ARGB);
+		PApplet.arrayCopy(getPlayerPixels(), img.pixels);
+		img.updatePixels();
+		return img;
+	}
+
+
 	// new API
 	static native boolean initSensor( int id );
 	static native boolean initDepthStream( boolean mapDepthToColor);
@@ -115,9 +137,7 @@ class p5KinectV2
 
 	static native void setDepthClipping(float nearClip, float farClip);
 	
-	/// updates the pixel buffers and textures
-	/// make sure to call this to update to the latest incoming frames
-	static native void update();
+	/// access to the pixel buffers and textures
 	static native int[] getColorPixels();
 	static native int[] getDepthPixels();       ///< grayscale values
 	static native int[] getRawDepthPixels();	///< raw 11 bit values
@@ -129,3 +149,4 @@ class p5KinectV2
 	// /// draw the video texture
 	void drawSkeleton(int index, int[] scale);
 	void drawAllSkeletons(int[] scale);}
+
