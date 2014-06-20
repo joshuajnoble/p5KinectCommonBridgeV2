@@ -26,6 +26,13 @@ public class Quaternion {
     Z = z;
   }
 
+  public void set(float w, float x, float y, float z) {
+    W = w;
+    X = x;
+    Y = y;
+    Z = z;
+  }
+
   // quaternion multiplication
   public Quaternion mult (Quaternion q) {
     float w = W*q.W - (X*q.X + Y*q.Y + Z*q.Z);

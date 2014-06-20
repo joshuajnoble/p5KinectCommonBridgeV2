@@ -68,11 +68,11 @@ public class SkeletonData {
 
 	public TrackingState trackingState;
 	public map<JointType, PVector> skeletonPositions;
-	public map<JointType, PVector> skeletonOrientation;
-	public map<JointType, PVector> skeletonPositionTrackingState;
-	public map<JointType, PVector> skeletonPositionConfidence;
+	public map<JointType, Quaternion> skeletonOrientation;
+	public map<JointType, TrackingState> skeletonPositionTrackingState;
+	public map<JointType, float> skeletonPositionConfidence;
 
-	final int SKELETON_COUNT = 6;
+	final int JointType_Count = 25;
 
 	public SkeletonData()
 	{
@@ -80,14 +80,17 @@ public class SkeletonData {
 		dwTrackingID = 0;
 		position = new PVector(0.0f, 0.0f, 0.0f);
 
-		skeletonOrientation = new PVector[NUI_SKELETON_POSITION_COUNT];
-		skeletonPositions = new PVector[NUI_SKELETON_POSITION_COUNT];
-		skeletonPositionTrackingState = new int[NUI_SKELETON_POSITION_COUNT];
-		skeletonPositionConfidence = new int[NUI_SKELETON_POSITION_COUNT];
+		skeletonOrientation = new map<JointType, Quaternion>();
+		skeletonPositions = new map<JointType, PVector>();
+		skeletonPositionTrackingState = new map<JointType, TrackingState>();
+		skeletonPositionConfidence = new map<JointType, float>();
 
-		for (int i = 0; i < NUI_SKELETON_POSITION_COUNT; i++) {
-			skeletonPositions[i] = new PVector(0.0f, 0.0f, 0.0f);
-			skeletonPositionTrackingState[i] = 0;
+		for (JointType joint : JointType.values()) 
+		{
+			skeletonPositions[joint] = new PVector(0.0f, 0.0f, 0.0f);
+			skeletonOrientation[joint] = new Quaternion();
+			skeletonPositionTrackingState[joint] = TrackingState_NotTracked;
+			skeletonPositionConfidence[joint] = 0.0;
 		}
 	}
 
@@ -99,12 +102,33 @@ public class SkeletonData {
 		this.position.y = _s.position.y;
 		this.position.z = _s.position.z;
 
-		for (int i = 0; i < NUI_SKELETON_POSITION_COUNT; i++) {
-			this.skeletonPositions[i].x = _s.skeletonPositions[i].x;
-			this.skeletonPositions[i].y = _s.skeletonPositions[i].y;
-			this.skeletonPositions[i].z = _s.skeletonPositions[i].z;
-			this.skeletonPositionTrackingState[i] = _s.skeletonPositionTrackingState[i];
+		for (JointType joint : JointType.values()) 
+		{
+			skeletonPositions[joint] = getJointPosition(joint);
+			skeletonOrientation[joint] = getJointOrientation(joint);
+			skeletonPositionTrackingState[joint] = getJointTrackingState(joint);
+			skeletonPositionConfidence[joint] = getJointConfidence(joint);
 		}
+	}
+
+	PVector getJointPosition( JointType joint ) 
+	{
+		return skeletonPositions[joint];
+	}
+
+	Quaternion getJointOrientation( JointType joint ) 
+	{
+		return skeletonOrientation[joint];
+	}
+
+	float getJointConfidence( JointType joint ) 
+	{
+		return skeletonPositionConfidence[joint];
+	}
+
+	TrackingState getJointTrackingState( JointType joint ) 
+	{
+		return skeletonPositionTrackingState[joint];
 	}
 }
 
@@ -114,6 +138,9 @@ class p5KinectV2 implements Runnable
 
 	PApplet parent;
 	ArrayList skeletonDrawOrder<JointMapping>;
+
+	final int SKELETON_COUNT = 6;
+
 	
 	public P5Kinect(PApplet _p) 
 	{
@@ -164,7 +191,7 @@ class p5KinectV2 implements Runnable
 			skeletons[i] = new SkeletonData();
 		}
 
-		// parent.registerDispose(this);
+		parent.registerDispose(this); //?
 		init();
 		welcome();
 
@@ -194,11 +221,10 @@ class p5KinectV2 implements Runnable
 			for (JointType joint : JointType.values()) 
 			{
 			  float pos[] = getJointPosition(i, joint);
-			  skeletons[i].getJointPosition(joint).set()
-			}
-			for (JointType joint : JointType.values()) 
-			{
+			  skeletons[i].getJointPosition(joint).set(pos[0], pos[1], pos[2], pos[3]);
+
 			  float orientation[] = getJointOrientation(i, joint);
+			  skeletons[i].getJointOrientation(joint).set(orientation[0], orientation[1], orientation[2], orientation[3])
 			}
 		}
 	}
