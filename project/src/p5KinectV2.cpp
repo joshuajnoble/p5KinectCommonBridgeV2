@@ -5,6 +5,7 @@ p5KinectV2::p5KinectV2(){
 
 	pDepthFrame = NULL;
 	pColorFrame = NULL;
+	pBodyIndexFrame = NULL;
 
 	beginMappingColorToDepth = false;
 	bNeedsUpdateSkeleton = false;
@@ -22,45 +23,8 @@ p5KinectV2::p5KinectV2(){
 	mappingDepthToColor = false;
 
 	bUsingSkeletons = false;
-  	bUseTexture = true;
-	bProgrammableRenderer = false;
 	
 	setDepthClipping();
-
-
-	skeletonDrawOrder[0] = make_pair<JointType, JointType>(JointType_Head, JointType_Neck);
-	skeletonDrawOrder[1] = make_pair<JointType, JointType>(JointType_Neck, JointType_SpineShoulder);
-	skeletonDrawOrder[2] = make_pair<JointType, JointType>(JointType_SpineShoulder, JointType_SpineMid);
-	skeletonDrawOrder[3] = make_pair<JointType, JointType>(JointType_SpineMid, JointType_SpineBase);
-	skeletonDrawOrder[4] = make_pair<JointType, JointType>(JointType_SpineShoulder, JointType_ShoulderRight);
-	skeletonDrawOrder[5] = make_pair<JointType, JointType>(JointType_SpineShoulder, JointType_ShoulderLeft);
-	skeletonDrawOrder[6] = make_pair<JointType, JointType>(JointType_SpineBase, JointType_HipRight);
-	skeletonDrawOrder[7] = make_pair<JointType, JointType>(JointType_SpineBase, JointType_HipLeft);
-
-	// Right Arm    
-	skeletonDrawOrder[8] = make_pair<JointType, JointType>(JointType_ShoulderRight, JointType_ElbowRight);
-	skeletonDrawOrder[9] = make_pair<JointType, JointType>(JointType_ElbowRight, JointType_WristRight);
-	skeletonDrawOrder[10] = make_pair<JointType, JointType>(JointType_WristRight, JointType_HandRight);
-	skeletonDrawOrder[11] = make_pair<JointType, JointType>(JointType_HandRight, JointType_HandTipRight);
-	skeletonDrawOrder[12] = make_pair<JointType, JointType>(JointType_WristRight, JointType_ThumbRight);
-
-	// Left Arm
-	skeletonDrawOrder[13] = make_pair<JointType, JointType>(JointType_ShoulderLeft, JointType_ElbowLeft);
-	skeletonDrawOrder[14] = make_pair<JointType, JointType>(JointType_ElbowLeft, JointType_WristLeft);
-	skeletonDrawOrder[15] = make_pair<JointType, JointType>(JointType_WristLeft, JointType_HandLeft);
-	skeletonDrawOrder[16] = make_pair<JointType, JointType>(JointType_HandLeft, JointType_HandTipLeft);
-	skeletonDrawOrder[17] = make_pair<JointType, JointType>(JointType_WristLeft, JointType_ThumbLeft);
-
-	// Right Leg
-	skeletonDrawOrder[18] = make_pair<JointType, JointType>(JointType_HipRight, JointType_KneeRight);
-	skeletonDrawOrder[19] = make_pair<JointType, JointType>(JointType_KneeRight, JointType_AnkleRight);
-	skeletonDrawOrder[20] = make_pair<JointType, JointType>(JointType_AnkleRight, JointType_FootRight);
-
-	// Left Leg
-	skeletonDrawOrder[21] = make_pair<JointType, JointType>(JointType_HipLeft, JointType_KneeLeft);
-	skeletonDrawOrder[22] = make_pair<JointType, JointType>(JointType_KneeLeft, JointType_AnkleLeft);
-	skeletonDrawOrder[23] = make_pair<JointType, JointType>(JointType_AnkleLeft, JointType_FootLeft);
-
 }
 
 //-----------------
@@ -85,32 +49,32 @@ void p5KinectV2::updateDepthLookupTable()
 }
 
 /// is the current frame new?
-bool p5KinectV2::isFrameNew(){
+bool p5KinectV2::isFrameNew()
+{
 	return isFrameNewVideo() || isFrameNewDepth();
 }
 
-bool p5KinectV2::isFrameNewVideo(){
+bool p5KinectV2::isFrameNewVideo()
+{
 	return bIsFrameNewVideo;
 }
 
-bool p5KinectV2::isFrameNewDepth(){
+bool p5KinectV2::isFrameNewDepth()
+{
 	return bIsFrameNewDepth;
 }
 
-bool p5KinectV2::isNewSkeleton() {
+bool p5KinectV2::isNewSkeleton() 
+{
 	return bNeedsUpdateSkeleton;
 }
 
-//vector<Skeleton> &p5KinectV2::getSkeletons() {
-//	return skeletons;
-//}
 /// updates the pixel buffers and textures
 /// make sure to call this to update to the latest incoming frames
 void p5KinectV2::update()
 {
-	if(!bStarted)
+	if(!bStarted) 
 	{
-		ofLogError("p5KinectV2::update") << "Kinect not started";
 		return;
 	}
 
@@ -119,49 +83,52 @@ void p5KinectV2::update()
 	{
 		bIsFrameNewVideo = true;
 		bNeedsUpdateVideo = false;
-
-		//swap(videoPixelsBack, videoPixels);
 		swap(pColorFrame, pColorFrameBack);
 
-	} else {
+	} 
+	else 
+	{
 		bIsFrameNewVideo = false;
 	}
 
 
-	// update depth pixels and texture if necessary
-	if(bNeedsUpdateDepth) {
-
-		//swap(depthPixelsRawBack, depthPixelsRaw);
+	// update depth pixels
+	if(bNeedsUpdateDepth) 
+	{
 		swap(pDepthFrameBack, pDepthFrame);
 
-		if(mappingColorToDepth) {
+		if(mappingColorToDepth) 
+		{
 			beginMappingColorToDepth = true;
 		}
 
 		bIsFrameNewDepth = true;
 		bNeedsUpdateDepth = false;
 
-		for(int i = 0; i < DEPTH_SIZE; i++) {
+		for(int i = 0; i < DEPTH_SIZE; i++) 
+		{
 			depthPixels[i] = depthLookupTable[ofClamp(pDepthFrame->Buffer[i] >> 4, 0, depthLookupTable.size() - 1)];
 			pDepthFrame->Buffer[i] = pDepthFrame->Buffer[i] >> 4;
 		}
 
-	} else {
+	} 
+	else 
+	{
 		bIsFrameNewDepth = false;
 	}
 
 	// update skeletons if necessary
-	if(bUsingSkeletons && bNeedsUpdateSkeleton) {	
+	if(bUsingSkeletons && bNeedsUpdateSkeleton) 
+	{
 		swap(skeletons, backSkeletons);
 		bNeedsUpdateSkeleton = false;
 
 	} 
 
 
-	if (bNeedsUpdateBodyIndex) {
-		
+	if (bNeedsUpdateBodyIndex) 
+	{
 		swap(pBodyIndexFrame, pBodyIndexFrame);
-
 		bNeedsUpdateBodyIndex = false;
 	}
 }
@@ -169,10 +136,11 @@ void p5KinectV2::update()
 
 bool p5KinectV2::initSensor( int id )
 {
-	if(bStarted){
-		ofLogError("p5KinectV2::initSensor") << "Cannot configure once the sensor has already started" << endl;
+	if(bStarted)
+	{
 		return false;
 	}
+
 	if (ofGetCurrentRenderer()->getType() == ofGLProgrammableRenderer::TYPE)
 	{
 		bProgrammableRenderer = true;
@@ -188,8 +156,8 @@ bool p5KinectV2::initDepthStream( bool mapDepthToColor )
 
 	mappingDepthToColor = mapDepthToColor;
 
-	if(bStarted){
-		ofLogError("p5KinectV2::initDepthStream") << " Cannot configure once the sensor has already started";
+	if(bStarted)
+	{
 		return false;
 	}
 
@@ -198,10 +166,13 @@ bool p5KinectV2::initDepthStream( bool mapDepthToColor )
 
 	//hr = KCBCreateDepthFrame(depthFrameDescription, &pDepthFrame);
 
-	if(bProgrammableRenderer) {
+	if(bProgrammableRenderer) 
+	{
 		depthPixels.allocate(depthFrameDescription.width, depthFrameDescription.height, OF_IMAGE_COLOR);
 		depthPixelsBack.allocate(depthFrameDescription.width, depthFrameDescription.height, OF_IMAGE_COLOR);
-	} else {
+	} 
+	else 
+	{
 		depthPixels.allocate(depthFrameDescription.width, depthFrameDescription.height, OF_IMAGE_GRAYSCALE);
 		depthPixelsBack.allocate(depthFrameDescription.width, depthFrameDescription.height, OF_IMAGE_GRAYSCALE);
 	}
@@ -218,26 +189,6 @@ bool p5KinectV2::initDepthStream( bool mapDepthToColor )
 	depthPixelsRawBack = new int[depthFrameDescription.lengthInPixels];
 	pDepthFrameBack->Buffer = depthPixelsRawBack;
 	pDepthFrameBack->Size = depthFrameDescription.lengthInPixels;
-
-	if(bUseTexture){
-
-		if(bProgrammableRenderer) {
-			//int w, int h, int glInternalFormat, bool bUseARBExtention, int glFormat, int pixelType
-			depthTex.allocate(depthFrameDescription.width, depthFrameDescription.height, GL_R8);//, true, GL_R8, GL_UNSIGNED_BYTE);
-			depthTex.setRGToRGBASwizzles(true);
-
-			//rawDepthTex.allocate(K2_IR_WIDTH, K2_IR_HEIGHT, GL_R16, true, GL_RED, GL_UNSIGNED_SHORT);
-			/*rawDepthTex.allocate(depthPixelsRaw, true);
-			rawDepthTex.setRGToRGBASwizzles(true);
-
-			cout << rawDepthTex.getWidth() << " " << rawDepthTex.getHeight() << endl;*/
-			//depthTex.allocate(K2_IR_WIDTH, K2_IR_HEIGHT, GL_RGB);
-		} else {
-			depthTex.allocate(depthFrameDescription.width, depthFrameDescription.height, GL_LUMINANCE);
-			rawDepthTex.allocate(depthFrameDescription.width, depthFrameDescription.height, GL_LUMINANCE16);
-		}
-	}
-	
 	
 	return bInited;
 }
@@ -275,8 +226,8 @@ bool p5KinectV2::initColorStream( bool mapColorToDepth, ColorImageFormat format)
 
 bool p5KinectV2::initIRStream( int width, int height )
 {
-	if(bStarted){
-		ofLogError("p5KinectV2::startIRStream") << " Cannot configure when the sensor has already started";
+	if(bStarted)
+	{
 		return false;
 	}
 
@@ -296,21 +247,20 @@ bool p5KinectV2::initIRStream( int width, int height )
 	pInfraredFrame->Buffer = irPixelsRaw;
 	pInfraredFrame->Size = irFrameDescription.lengthInPixels;
 	bInited = true;
-	ofLogError("p5KinectV2::initIRStream") << "cannot initialize stream";
+	//ofLogError("p5KinectV2::initIRStream") << "cannot initialize stream";
 	return true;
 }
 
 bool p5KinectV2::initBodyIndexStream()
 {
-	if (bStarted){
-		ofLogError("p5KinectV2::initBodyIndexStream") << "Cannot configure once the sensor has already started";
+	if (bStarted)
+	{
 		return false;
 	}
 	HRESULT hr = KCBGetBodyIndexFrameDescription(hKinect, &bodyIndexFrameDescription);
 
 	if (!SUCCEEDED(hr))
 	{
-		ofLogError("p5KinectV2::initBodyIndexStream") << "cannot initialize stream";
 		return false;
 	}
 
@@ -334,8 +284,8 @@ bool p5KinectV2::initBodyIndexStream()
 
 bool p5KinectV2::initSkeletonStream( bool seated )
 {
-	if(bStarted){
-		ofLogError("p5KinectV2::initSkeletonStream") << "Cannot configure once the sensor has already started";
+	if(bStarted)
+	{
 		return false;
 	}
 
@@ -356,7 +306,8 @@ bool p5KinectV2::start()
 
 //
 void p5KinectV2::stop() {
-	if(bStarted){
+	if(bStarted)
+	{
 		waitForThread(true);
 		bStarted = false;
 
@@ -371,15 +322,34 @@ void p5KinectV2::stop() {
 	}
 }	
 
+float * p5KinectV2::getJointPosition( int skeletonIndex, int jointType )
+{
+	return skeletons[skeletonIndex].get(jointType).getPosition();
+}
+
+float * p5KinectV2::getJointOrientation( int skeletonIndex, int jointType )
+{
+	return skeletons[skeletonIndex].get(jointType).getOrientation();
+}
+
+float p5KinectV2::getJointCertainty( int skeletonIndex, int jointType )
+{
+	// erm, gotta get this
+	//return skeletons[skeletonIndex].get(jointType).getOrientation();
+	return 1.0;
+}
+
 //
 // this now being called by the java wrapper, not a windows thread
 //
-void p5KinectV2::threadFunction(){
+void p5KinectV2::threadFunction()
+{
 
 	LONGLONG timestamp;
 	
 	//how can we tell?
-	while(isThreadRunning()) {
+	while(isThreadRunning())
+	{
 
 		if (SUCCEEDED(KCBGetDepthFrame(hKinect, pDepthFrame)))
 		{
@@ -417,12 +387,12 @@ void p5KinectV2::threadFunction(){
 						HRESULT hrOrient = ppBodies[i]->GetJointOrientations(JointType_Count, jointOrients);
 						if (FAILED(hrJoints))
 						{
-							ofLogError("p5KinectV2::threadedFunction") << "Failed to get joints";
+							// how to log errors?
 						}
 
 						if (FAILED(hrOrient))
 						{
-							ofLogError("p5KinectV2::threadedFunction") << "Failed to get orientations";
+							// how to log errors?
 						}
 
 						if (SUCCEEDED(hrJoints) && SUCCEEDED(hrOrient))

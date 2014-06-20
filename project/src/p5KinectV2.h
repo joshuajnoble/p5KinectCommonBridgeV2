@@ -76,30 +76,14 @@ class p5KinectV2 {
 	unsigned char* getColorPixels() { return colorPixels; }
 	unsigned char* getDepthPixels() { return depthPixels; }       ///< grayscale values
 	int* getRawDepthPixels() { return depthPixelsRaw; }	///< raw 11 bit values
+	int* getPlayerIndexPixels() { return playerIndexPixels; }
+
+	float * getJointPosition( int skeletonIndex, int jointType );
+	float * getJointOrientation( int skeletonIndex, int jointType );
+	float getJointCertainty( int skeletonIndex, int jointType );
 
 	/// enable/disable frame loading into textures on update()
 	void setUseTexture(boolean bUse);
-
-	// /// draw the video texture
-	// void draw(float x, float y, float w, float h);
-	// void draw(float x, float y);
-	// void draw(int* point);
-
-	// /// draw the grayscale depth texture
-	// void drawRawDepth(float x, float y, float w, float h);
-	// void drawRawDepth(float x, float y);
-	// void drawRawDepth(int* point);
-
-	// /// draw the grayscale depth texture
-	// void drawDepth(float x, float y, float w, float h);
-	// void drawDepth(float x, float y);
-	// void drawDepth(int* point);
-
-	// void drawIR( float x, float y, float w, float h );
-
-	// void drawBodyIndex(float x, float y);
-	// void drawSkeleton(int index, int* scale);
-	// void drawAllSkeletons(int* scale);
 
   protected:
 
@@ -162,7 +146,7 @@ class p5KinectV2 {
 	KCBFrameDescription irFrameDescription;
 	KCBFrameDescription bodyIndexFrameDescription;
 
-	unsigned char* bodyIndexPixelsBack, bodyIndexPixels;
+	unsigned char* playerIndexPixels;
 	unsigned char* irPixelsRaw, irPixelsRawBack;
 	int* depthPixelsRaw, depthPixelsRawBack;
 	unsigned char* depthPixels, depthPixelsBack;
